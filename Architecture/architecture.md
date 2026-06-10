@@ -177,14 +177,6 @@ The player realizes:
 assets/
 │
 ├── images/
-│   ├── logo.png
-│   ├── start-screen-bg.png
-│   ├── journey-map.png
-│   ├── forest-bg.png
-│   ├── mountain-bg.png
-│   ├── result-bg.png
-│   └── ravan.png
-│
 └── sounds/
 
 
