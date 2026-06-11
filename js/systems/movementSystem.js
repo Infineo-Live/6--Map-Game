@@ -13,6 +13,7 @@ export class MovementSystem {
         this.isRavanMoving = false;
 
         this.alignRavanToNode(nodeConfiguration, levelNumber);
+        this.updateInstructionBanner(nodeConfiguration);
     }
 
     alignRavanToNode(nodeConfiguration, levelNumber) {
@@ -92,7 +93,8 @@ export class MovementSystem {
                 instructionBannerElement.classList.remove('visible');
             }, 3000);
         } else {
-            instructionBannerElement.classList.remove('visible');
+            instructionBannerTextElement.textContent = 'Click nodes to navigate Ravan to the Finish node';
+            instructionBannerElement.classList.add('visible');
         }
     }
 }
