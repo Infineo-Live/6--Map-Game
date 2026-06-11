@@ -1,0 +1,108 @@
+/* Camera Viewport and scrolling game board */
+.camera-viewport {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--bg-dark);
+}
+
+.game-board {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    /* Hardware accelerated camera pan */
+    transform: translate3d(0px, 0px, 0px) scale(1);
+    transform-origin: 0 0;
+    transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.level-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#level-1 {
+    aspect-ratio: 941 / 1150;
+}
+
+#cloud-barrier-container {
+    aspect-ratio: 1536 / 1024;
+}
+
+#level-2 {
+    aspect-ratio: 943 / 1150;
+}
+
+.level-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+}
+
+.cloud-barrier-img {
+    object-fit: cover;
+}
+
+.nodes-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+}
+
+/* SVG Path Overlay layer - spans the entire game board */
+.path-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    pointer-events: none;
+}
+
+/* Instruction Banner */
+#instruction-banner {
+    position: absolute;
+    top: 3cqh;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(42, 32, 21, 0.85);
+    border: 2px solid var(--color-accent);
+    border-radius: 12px;
+    padding: 1.5cqh 4cqw;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(207, 168, 110, 0.2);
+    transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    backdrop-filter: blur(8px);
+}
+
+#instruction-banner.visible {
+    opacity: 1;
+}
+
+.banner-text {
+    font-family: var(--font-primary);
+    font-size: 2.2cqh;
+    font-weight: 600;
+    color: var(--color-text-light);
+    letter-spacing: 0.1cqw;
+    text-transform: uppercase;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}

@@ -1,0 +1,33 @@
+.start-bg {
+    background-image: url('../assets/images/backgrounds/start-bg.png');
+}
+
+#start-screen .screen-content {
+    gap: 4cqh;
+}
+
+.title-logo {
+    width: 60cqw;
+    max-width: 500px;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.6));
+    animation: floatTitle 4s ease-in-out infinite;
+}
+
+.start-btn-img img {
+    width: 20cqw;
+    max-width: 180px;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Float animation for the logo */
+@keyframes floatTitle {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}

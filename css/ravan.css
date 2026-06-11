@@ -1,0 +1,43 @@
+.ravan-sprite {
+    position: absolute;
+    width: 110px;
+    height: 110px;
+    pointer-events: none;
+    z-index: 30;
+    /* Translate anchors Ravan's feet to the center of the node */
+    transform: translate(-50%, -75%);
+    transition: left 1s cubic-bezier(0.25, 1, 0.5, 1),
+                top 1s cubic-bezier(0.25, 1, 0.5, 1);
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.6));
+}
+
+.ravan-sprite img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    animation: ravanIdle 3s ease-in-out infinite alternate;
+}
+
+/* Float idle animation for Ravan */
+@keyframes ravanIdle {
+    0% {
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        transform: translateY(-5px) scale(1.02);
+    }
+}
+
+/* Walk animation class added during movement */
+.ravan-sprite.walking img {
+    animation: ravanWalk 0.25s infinite alternate ease-in-out;
+}
+
+@keyframes ravanWalk {
+    0% {
+        transform: rotate(-5deg) translateY(-2px);
+    }
+    100% {
+        transform: rotate(5deg) translateY(-6px);
+    }
+}

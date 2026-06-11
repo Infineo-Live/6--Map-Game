@@ -1,0 +1,143 @@
+.map-node {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    /* Center positioning relative to percentage coordinates */
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    z-index: 15;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 3D Isometric Stone Appearance */
+.node-stone {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #a5927d, #5d4b38);
+    border: 3px solid #3d2f21;
+    box-shadow: 0 6px 0 #3d2f21, 0 12px 18px rgba(0, 0, 0, 0.6);
+    /* Flatten the circle to look isometric */
+    transform: rotateX(45deg);
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+                background 0.5s ease-in-out,
+                filter 0.3s ease;
+    position: relative;
+}
+
+/* Hover effects for revealed interactive nodes */
+.map-node.revealed:hover .node-stone {
+    transform: rotateX(45deg) translateY(-4px);
+    box-shadow: 0 10px 0 #3d2f21, 0 18px 24px rgba(0, 0, 0, 0.8);
+    filter: brightness(1.15) drop-shadow(0 0 8px var(--color-accent));
+}
+
+/* Active Node (Shining / Pulsing through Clouds) */
+.map-node.shining .node-stone {
+    filter: drop-shadow(0 0 12px var(--color-accent));
+    animation: nodeShine 1.8s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Visited Node */
+.map-node.visited .node-stone {
+    background: linear-gradient(135deg, #ffd700, #b8860b);
+    border: 3px solid #5a4200;
+    box-shadow: 0 6px 0 #5a4200, 0 12px 18px rgba(255, 215, 0, 0.4);
+}
+
+.map-node.visited:hover .node-stone {
+    transform: rotateX(45deg) translateY(-4px);
+    box-shadow: 0 10px 0 #5a4200, 0 18px 24px rgba(255, 215, 0, 0.6);
+    filter: brightness(1.1) drop-shadow(0 0 10px var(--color-gold));
+}
+
+/* Dead End Node (when revealed) */
+.map-node.dead-end.revealed .node-stone {
+    background: linear-gradient(135deg, #e06c60, #8f2920);
+    border: 3px solid #55140e;
+    box-shadow: 0 6px 0 #55140e, 0 12px 18px rgba(224, 108, 96, 0.4);
+}
+
+/* Finish Node (when revealed) */
+.map-node.finish.revealed .node-stone {
+    background: linear-gradient(135deg, #6ec08b, #286842);
+    border: 3px solid #143c24;
+    box-shadow: 0 6px 0 #143c24, 0 12px 18px rgba(110, 192, 139, 0.4);
+}
+
+/* Multi-Layered Thick Cloud Deck covering the node */
+.cloud-deck {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    pointer-events: none;
+    z-index: 25;
+    opacity: 1;
+    transition: opacity 1.5s cubic-bezier(0.25, 1, 0.5, 1), 
+                transform 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.cloud-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0.95;
+    pointer-events: none;
+}
+
+/* Stack and offset 3 layers to ensure thick occlusion */
+.cloud-layer.c-1 {
+    transform: scale(1.1) rotate(20deg) translate(-5px, -5px);
+}
+
+.cloud-layer.c-2 {
+    transform: scale(0.95) rotate(140deg) translate(8px, -8px);
+}
+
+.cloud-layer.c-3 {
+    transform: scale(1.05) rotate(260deg) translate(-3px, 8px);
+}
+
+/* Revealed State: clouds expand and blow away */
+.map-node.revealed .cloud-deck {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.8) rotate(45deg);
+}
+
+/* Shining State: clouds fade slightly and breathe to reveal the light underneath */
+.map-node.shining .cloud-deck {
+    opacity: 0.55;
+    animation: cloudBreathe 3s ease-in-out infinite alternate;
+}
+
+/* Node Animations */
+@keyframes nodeShine {
+    0% {
+        transform: rotateX(45deg) scale(1);
+        box-shadow: 0 6px 0 #3d2f21, 0 8px 15px rgba(207, 168, 110, 0.3);
+    }
+    100% {
+        transform: rotateX(45deg) scale(1.12);
+        box-shadow: 0 6px 0 #3d2f21, 0 16px 30px rgba(207, 168, 110, 0.75);
+    }
+}
+
+@keyframes cloudBreathe {
+    0% {
+        transform: translate(-50%, -50%) scale(0.98);
+        opacity: 0.65;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.05);
+        opacity: 0.45;
+    }
+}

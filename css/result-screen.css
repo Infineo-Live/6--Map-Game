@@ -1,0 +1,21 @@
+.result-bg {
+    background-image: url('../assets/images/backgrounds/result-bg.png');
+}
+
+.result-text-img {
+    width: 60cqw;
+    max-width: 500px;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.8));
+    animation: floatResultText 5s ease-in-out infinite;
+}
+
+@keyframes floatResultText {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(-8px) scale(1.02);
+    }
+}

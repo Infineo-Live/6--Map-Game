@@ -1,0 +1,72 @@
+.journey-map-bg-under {
+    background-image: url('../assets/images/backgrounds/start-bg.png');
+}
+
+.journey-map-bg {
+    background-image: url('../assets/images/backgrounds/map-bg.png');
+}
+
+.map-pulse-container {
+    perspective: 1000px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#map-scroll-item {
+    width: 35cqw;
+    max-width: 300px;
+    height: auto;
+    object-fit: contain;
+    cursor: pointer;
+    filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.7));
+    transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1s ease-in-out;
+}
+
+/* Pulsing effect */
+#map-scroll-item.pulsing {
+    animation: pulseScroll 2s ease-in-out infinite;
+}
+
+#map-scroll-item.zoomed {
+    transform: scale(4.5) rotate(5deg);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.continue-btn-img {
+    position: absolute;
+    bottom: 8cqh;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease-in-out, transform 0.2s ease;
+}
+
+.continue-btn-img.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.continue-btn-img img {
+    width: 25cqw;
+    max-width: 220px;
+    height: auto;
+    object-fit: contain;
+}
+
+@keyframes pulseScroll {
+    0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 10px 25px rgba(207, 168, 110, 0.5));
+    }
+    50% {
+        transform: scale(1.05);
+        filter: drop-shadow(0 10px 35px rgba(207, 168, 110, 0.8));
+    }
+}

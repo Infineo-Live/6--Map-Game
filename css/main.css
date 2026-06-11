@@ -1,0 +1,142 @@
+/* Root variables and global reset */
+:root {
+    --bg-dark: #0a0806;
+    --font-primary: 'Outfit', sans-serif;
+    --color-text-light: #f5eedc;
+    --color-text-dark: #2a2015;
+    --color-accent: #cfa86e;
+    --color-accent-glow: rgba(207, 168, 110, 0.4);
+    --color-gold: #ffd700;
+    --color-node-normal: #8e7c65;
+    --color-node-active: #d6b887;
+    --color-node-visited: #ffd700;
+    --color-node-dead: #d1584c;
+    --color-node-finish: #57a773;
+
+    /* Transition durations */
+    --transition-bg: 1000ms;
+    --transition-screen: 800ms;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-dark);
+    font-family: var(--font-primary);
+    overflow: hidden;
+    color: var(--color-text-light);
+}
+
+/* Primary Game Viewport: Strictly landscape responsive container */
+.game-viewport {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    container-type: size; /* Enables cqw / cqh for components inside */
+}
+
+/* Base Screen styles */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity var(--transition-screen) ease-in-out;
+}
+
+.screen.active {
+    pointer-events: auto;
+    opacity: 1;
+    z-index: 10;
+}
+
+/* Screen background system: supports stacked rendering during transitions */
+.screen-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0;
+    z-index: 1;
+    transition: opacity var(--transition-bg) ease-in-out;
+}
+
+.screen-bg.active {
+    opacity: 1;
+    z-index: 2;
+}
+
+.screen-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 5;
+}
+
+/* Global button reset */
+.btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.2s ease;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 15px var(--color-accent));
+}
+
+.btn:active {
+    transform: scale(0.95);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Utility to overlay backgrounds correctly */
+.bg-transition-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 3;
+}
