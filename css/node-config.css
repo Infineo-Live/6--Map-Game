@@ -1,7 +1,7 @@
 #level_one_row_one_left {
     --horizontal-percentage: 23;
     --vertical-percentage: 21;
-    --node-type: "dead-end";
+    --node-type: "normal";
     --connected-from: "level_one_row_one_center";
     --connected-to: "level_one_row_one_center_middle";
 }
@@ -57,7 +57,7 @@
 #level_one_row_three_left {
     --horizontal-percentage: 21;
     --vertical-percentage: 55;
-    --node-type: "normal";
+    --node-type: "dead-end";
     --connected-from: "level_one_row_two_left";
     --connected-to: "";
 }
@@ -137,7 +137,7 @@
 #level_two_row_two_left {
     --horizontal-percentage: 25;
     --vertical-percentage: 24;
-    --node-type: "dead-end";
+    --node-type: "normal";
     --connected-from: "level_two_row_two_center";
     --connected-to: "level_two_row_one_left_center";
 }
@@ -161,7 +161,7 @@
 #level_two_row_two_right {
     --horizontal-percentage: 75;
     --vertical-percentage: 35;
-    --node-type: "normal";
+    --node-type: "dead-end";
     --connected-from: "";
     --connected-to: "level_two_row_two_center";
 }

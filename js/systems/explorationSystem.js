@@ -183,7 +183,7 @@ export class ExplorationSystem {
                 return;
             }
 
-            nodeElement.classList.remove('visited', 'revealed', 'shining');
+            nodeElement.classList.remove('visited', 'revealed', 'shining', 'dead-end', 'finish');
 
             if (this.visitedNodeIdentifiers.has(currentNodeConfiguration.identifier)) {
                 nodeElement.classList.add('visited', 'revealed');

@@ -3,8 +3,8 @@ export const LEVEL_1_NODES = {
         identifier: 'level_one_row_one_left',
         horizontalPercentage: 25,
         verticalPercentage: 15,
-        nodeType: 'dead-end',
-        nodeLabel: 'Dead End: Dense Brambles',
+        nodeType: 'normal',
+        nodeLabel: 'Dense Brambles',
         connectedFromNodeIdentifiers: ['level_one_row_one_center'],
         connectedToNodeIdentifiers: ['level_one_row_one_center_middle']
     },
