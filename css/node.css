@@ -2,6 +2,8 @@
     position: absolute;
     width: 80px;
     height: 80px;
+    left: calc(var(--horizontal-percentage) * 1%);
+    top: calc(var(--vertical-percentage) * 1%);
     transform: translate(-50%, -50%);
     cursor: pointer;
     z-index: 15;

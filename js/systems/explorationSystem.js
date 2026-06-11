@@ -1,4 +1,4 @@
-import { LEVEL_1_NODES, LEVEL_2_NODES } from '../data/nodes.js';
+import { LEVEL_1_NODES, LEVEL_2_NODES, getNodeCoordinates, getNodeConnections, getNodeType } from '../data/nodes.js';
 
 export class ExplorationSystem {
     constructor(gameBoardElement) {
@@ -29,8 +29,6 @@ export class ExplorationSystem {
             const nodeElement = document.createElement('div');
             nodeElement.className = 'map-node';
             nodeElement.id = nodeConfiguration.identifier;
-            nodeElement.style.left = `${nodeConfiguration.horizontalPercentage}%`;
-            nodeElement.style.top = `${nodeConfiguration.verticalPercentage}%`;
 
             const stoneDiscElement = document.createElement('div');
             stoneDiscElement.className = 'node-stone';
@@ -65,21 +63,18 @@ export class ExplorationSystem {
     rebuildPathsData(levelNumber, nodesConfiguration) {
         this.pathConnectionsData = this.pathConnectionsData.filter(pathConnection => pathConnection.levelNumber !== levelNumber);
 
-        const seenConnectionsSet = new Set();
-
         Object.values(nodesConfiguration).forEach(nodeConfiguration => {
-            nodeConfiguration.connectedNodeIdentifiers.forEach(connectionNodeIdentifier => {
-                const pairIdentifier = [nodeConfiguration.identifier, connectionNodeIdentifier].sort().join('-');
+            const nodeConnections = getNodeConnections(nodeConfiguration.identifier);
 
-                if (!seenConnectionsSet.has(pairIdentifier)) {
-                    seenConnectionsSet.add(pairIdentifier);
-                    this.pathConnectionsData.push({
-                        identifier: pairIdentifier,
-                        sourceNodeIdentifier: nodeConfiguration.identifier,
-                        destinationNodeIdentifier: connectionNodeIdentifier,
-                        levelNumber: levelNumber
-                    });
-                }
+            nodeConnections.connectedToNodeIdentifiers.forEach(connectionNodeIdentifier => {
+                const pairIdentifier = `${nodeConfiguration.identifier}-${connectionNodeIdentifier}`;
+
+                this.pathConnectionsData.push({
+                    identifier: pairIdentifier,
+                    sourceNodeIdentifier: nodeConfiguration.identifier,
+                    destinationNodeIdentifier: connectionNodeIdentifier,
+                    levelNumber: levelNumber
+                });
             });
         });
     }
@@ -143,10 +138,11 @@ export class ExplorationSystem {
     }
 
     getNodePixelPosition(nodeConfiguration, levelNumber, boardWidthPixels, levelOneHeightPixels, levelTwoHeightPixels, levelTwoTopOffsetPixels) {
-        const horizontalCoordinatePixels = (nodeConfiguration.horizontalPercentage / 100) * boardWidthPixels;
+        const nodeCoordinates = getNodeCoordinates(nodeConfiguration.identifier);
+        const horizontalCoordinatePixels = (nodeCoordinates.horizontalPercentage / 100) * boardWidthPixels;
         const levelHeightPixels = levelNumber === 1 ? levelOneHeightPixels : levelTwoHeightPixels;
         const verticalOffsetPixels = levelNumber === 1 ? 0 : levelTwoTopOffsetPixels;
-        const verticalCoordinatePixels = verticalOffsetPixels + (nodeConfiguration.verticalPercentage / 100) * levelHeightPixels;
+        const verticalCoordinatePixels = verticalOffsetPixels + (nodeCoordinates.verticalPercentage / 100) * levelHeightPixels;
 
         return { horizontalCoordinatePixels, verticalCoordinatePixels };
     }
@@ -157,18 +153,27 @@ export class ExplorationSystem {
 
     revealNode(nodeIdentifier, levelNodesConfiguration) {
         this.visitedNodeIdentifiers.add(nodeIdentifier);
-        this.revealedNodeIdentifiers.add(nodeIdentifier);
+        this.updateExplorationState(levelNodesConfiguration);
+        this.drawPaths();
+    }
 
-        const nodeConfiguration = levelNodesConfiguration[nodeIdentifier];
+    updateExplorationState(levelNodesConfiguration) {
+        this.revealedNodeIdentifiers.clear();
 
-        if (!nodeConfiguration) {
-            return;
-        }
+        this.visitedNodeIdentifiers.forEach(visitedNodeIdentifier => {
+            this.revealedNodeIdentifiers.add(visitedNodeIdentifier);
 
-        nodeConfiguration.connectedNodeIdentifiers.forEach(connectionNodeIdentifier => {
-            if (levelNodesConfiguration[connectionNodeIdentifier]) {
-                this.revealedNodeIdentifiers.add(connectionNodeIdentifier);
-            }
+            const nodeConnections = getNodeConnections(visitedNodeIdentifier);
+            const adjacentNodeIdentifiers = [
+                ...nodeConnections.connectedFromNodeIdentifiers,
+                ...nodeConnections.connectedToNodeIdentifiers
+            ];
+
+            adjacentNodeIdentifiers.forEach(connectionNodeIdentifier => {
+                if (levelNodesConfiguration[connectionNodeIdentifier]) {
+                    this.revealedNodeIdentifiers.add(connectionNodeIdentifier);
+                }
+            });
         });
 
         Object.values(levelNodesConfiguration).forEach(currentNodeConfiguration => {
@@ -187,14 +192,14 @@ export class ExplorationSystem {
             }
 
             if (this.visitedNodeIdentifiers.has(currentNodeConfiguration.identifier)) {
-                if (currentNodeConfiguration.nodeType === 'dead-end') {
+                const nodeType = getNodeType(currentNodeConfiguration.identifier);
+
+                if (nodeType === 'dead-end') {
                     nodeElement.classList.add('dead-end');
-                } else if (currentNodeConfiguration.nodeType === 'finish') {
+                } else if (nodeType === 'finish') {
                     nodeElement.classList.add('finish');
                 }
             }
         });
-
-        this.drawPaths();
     }
 }

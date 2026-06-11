@@ -1,0 +1,225 @@
+#level_one_row_one_left {
+    --horizontal-percentage: 23;
+    --vertical-percentage: 21;
+    --connected-from: "level_one_row_one_center";
+    --connected-to: "level_one_row_one_center_middle";
+}
+
+#level_one_row_one_center {
+    --horizontal-percentage: 50;
+    --vertical-percentage: 21;
+    --connected-from: "";
+    --connected-to: "level_one_row_one_left level_one_row_one_right";
+}
+
+#level_one_row_one_center_middle {
+    --horizontal-percentage: 22;
+    --vertical-percentage: 32;
+    --connected-from: "level_one_row_one_left";
+    --connected-to: "level_one_row_two_left";
+}
+
+#level_one_row_one_right {
+    --horizontal-percentage: 68;
+    --vertical-percentage: 21;
+    --node-type: "dead-end";
+    --connected-from: "level_one_row_one_center";
+    --connected-to: "";
+}
+
+#level_one_row_two_left {
+    --horizontal-percentage: 23;
+    --vertical-percentage: 42;
+    --connected-from: "level_one_row_one_center_middle";
+    --connected-to: "level_one_row_three_left level_one_row_two_center ";
+}
+
+#level_one_row_two_center {
+    --horizontal-percentage: 50;
+    --vertical-percentage: 42;
+    --connected-from: "level_one_row_two_left ";
+    --connected-to: "level_one_row_two_right level_one_row_three_center ";
+}
+
+#level_one_row_two_right {
+    --horizontal-percentage: 72;
+    --vertical-percentage: 42;
+    --connected-from: "level_one_row_two_center";
+    --connected-to: "";
+}
+
+#level_one_row_three_left {
+    --horizontal-percentage: 21;
+    --vertical-percentage: 55;
+    --connected-from: "level_one_row_two_left";
+    --connected-to: "";
+}
+
+#level_one_row_three_center {
+    --horizontal-percentage: 50;
+    --vertical-percentage: 56;
+    --connected-from: "level_one_row_two_center";
+    --connected-to: "level_one_row_four_center";
+}
+
+
+#level_one_row_four_center {
+    --horizontal-percentage: 50;
+    --vertical-percentage: 68;
+    --connected-from: "level_one_row_three_center";
+    --connected-to: "level_one_row_four_right level_one_row_four_center_middle";
+}
+
+#level_one_row_four_center_middle {
+    --horizontal-percentage: 50;
+    --vertical-percentage: 83;
+    --connected-from: "level_one_row_four_center";
+    --connected-to: "level_one_finish";
+}
+
+#level_one_row_four_right {
+    --horizontal-percentage: 73;
+    --vertical-percentage: 68;
+    --connected-from: "level_one_row_four_center";
+    --connected-to: "";
+}
+
+#level_one_finish {
+    --horizontal-percentage: 50;
+    --vertical-percentage: 95;
+    --connected-from: "level_one_row_four_center_middle";
+    --connected-to: "";
+}
+
+#level_two_row_one_left {
+    --horizontal-percentage: 32.2;
+    --vertical-percentage: 13;
+    --connected-from: "level_two_row_one_left_center";
+    --connected-to: "";
+}
+
+#level_two_row_one_left_center {
+    --horizontal-percentage: 25;
+    --vertical-percentage: 17;
+    --connected-from: "level_two_row_two_left";
+    --connected-to: "level_two_row_one_left";
+}
+
+#level_two_row_one_right {
+    --horizontal-percentage: 81.2;
+    --vertical-percentage: 7;
+    --connected-from: "";
+    --connected-to: "level_two_row_one_right_middle";
+}
+
+#level_two_row_one_right_middle {
+    --horizontal-percentage: 65;
+    --vertical-percentage: 22;
+    --connected-from: "level_two_row_one_right";
+    --connected-to: "level_two_row_two_center";
+}
+
+#level_two_row_two_left {
+    --horizontal-percentage: 25;
+    --vertical-percentage: 24;
+    --connected-from: "level_two_row_two_center";
+    --connected-to: "level_two_row_one_left_center";
+}
+
+#level_two_row_two_center {
+    --horizontal-percentage: 50;
+    --vertical-percentage: 29;
+    --connected-from: "level_two_row_one_right_middle";
+    --connected-to: "level_two_row_two_right level_two_row_two_left level_two_row_two_center_middle";
+}
+
+#level_two_row_two_center_middle {
+    --horizontal-percentage: 50;
+    --vertical-percentage: 41;
+    --connected-from: "level_two_row_two_center";
+    --connected-to: "level_two_row_three_center";
+}
+
+#level_two_row_two_right {
+    --horizontal-percentage: 75;
+    --vertical-percentage: 35;
+    --connected-from: "";
+    --connected-to: "level_two_row_two_center";
+}
+
+#level_two_row_three_left {
+    --horizontal-percentage: 21;
+    --vertical-percentage: 52;
+    --connected-from: "level_two_row_three_left_center";
+    --connected-to: "level_two_row_four_left_center";
+}
+
+#level_two_row_three_left_center {
+    --horizontal-percentage: 36.5;
+    --vertical-percentage: 54.5;
+    --connected-from: "level_two_row_three_center";
+    --connected-to: "level_two_row_three_left level_two_row_four_center";
+}
+
+#level_two_row_three_center {
+    --horizontal-percentage: 48;
+    --vertical-percentage: 49;
+    --connected-from: "level_two_row_two_center_middle";
+    --connected-to: "level_two_row_three_left_center level_two_row_three_right_center";
+}
+
+#level_two_row_three_right_center {
+    --horizontal-percentage: 61.5;
+    --vertical-percentage: 54.5;
+    --connected-from: "level_two_row_three_center";
+    --connected-to: "level_two_row_three_right level_two_row_four_center";
+}
+
+#level_two_row_three_right {
+    --horizontal-percentage: 81;
+    --vertical-percentage: 52;
+    --connected-from: "level_two_row_three_right_center";
+    --connected-to: "level_two_row_four_right";
+}
+
+#level_two_row_four_left_center {
+    --horizontal-percentage: 18;
+    --vertical-percentage: 62;
+    --connected-from: "level_two_row_three_left";
+    --connected-to: "level_two_row_four_left";
+}
+
+#level_two_row_four_left {
+    --horizontal-percentage: 15;
+    --vertical-percentage: 72;
+    --connected-from: "level_two_row_four_left_center";
+    --connected-to: "";
+}
+
+#level_two_row_four_center {
+    --horizontal-percentage: 48;
+    --vertical-percentage: 68;
+    --connected-from: "level_two_row_three_right_center level_two_row_three_left_center";
+    --connected-to: "level_two_finish";
+}
+
+#level_two_row_four_right {
+    --horizontal-percentage: 86;
+    --vertical-percentage: 68;
+    --connected-from: "level_two_row_three_right";
+    --connected-to: "level_two_row_five_right";
+}
+
+#level_two_row_five_right {
+    --horizontal-percentage: 85;
+    --vertical-percentage: 85;
+    --connected-from: "level_two_row_four_right";
+    --connected-to: "";
+}
+
+#level_two_finish {
+    --horizontal-percentage: 47;
+    --vertical-percentage: 86;
+    --connected-from: "level_two_row_four_center";
+    --connected-to: "";
+}

@@ -1,4 +1,4 @@
-import { LEVEL_1_NODES, LEVEL_2_NODES } from './data/nodes.js';
+import { LEVEL_1_NODES, LEVEL_2_NODES, getNodeConnections, getNodeType } from './data/nodes.js';
 import { CameraSystem } from './systems/cameraSystem.js';
 import { ExplorationSystem } from './systems/explorationSystem.js';
 import { MovementSystem } from './systems/movementSystem.js';
@@ -43,12 +43,40 @@ class GameController {
                 this.explorationSystem.drawPaths();
 
                 const currentNodeConfiguration = this.movementSystem.currentNodeConfiguration;
+
                 if (currentNodeConfiguration) {
                     this.movementSystem.alignRavanToNode(currentNodeConfiguration, this.activeLevelNumber);
                     this.cameraSystem.update(currentNodeConfiguration, this.activeLevelNumber, false);
                 }
             }
         });
+
+        const headMutationObserver = new MutationObserver((mutations) => {
+            const isStylesheetModified = mutations.some(mutation => {
+                return mutation.target.tagName === 'LINK' && mutation.attributeName === 'href';
+            });
+
+            if (isStylesheetModified) {
+                setTimeout(() => {
+                    if (this.currentScreenName === 'gameplay') {
+                        const nodesConfiguration = this.activeLevelNumber === 1 ? LEVEL_1_NODES : LEVEL_2_NODES;
+
+                        this.explorationSystem.rebuildPathsData(this.activeLevelNumber, nodesConfiguration);
+                        this.explorationSystem.updateExplorationState(nodesConfiguration);
+                        this.explorationSystem.drawPaths();
+
+                        const currentNodeConfiguration = this.movementSystem.currentNodeConfiguration;
+
+                        if (currentNodeConfiguration) {
+                            this.movementSystem.alignRavanToNode(currentNodeConfiguration, this.activeLevelNumber);
+                            this.cameraSystem.update(currentNodeConfiguration, this.activeLevelNumber, false);
+                        }
+                    }
+                }, 100);
+            }
+        });
+
+        headMutationObserver.observe(document.head, { subtree: true, attributes: true, attributeFilter: ['href'] });
     }
 
     handleStartClick() {
@@ -150,7 +178,7 @@ class GameController {
         this.activeLevelNumber = 1;
         this.explorationSystem.initLevel(1);
 
-        const startNodeConfiguration = LEVEL_1_NODES.l1_r1_2;
+        const startNodeConfiguration = LEVEL_1_NODES.level_one_row_one_center;
         this.movementSystem.setCurrentNode(startNodeConfiguration, 1);
         this.explorationSystem.revealNode(startNodeConfiguration.identifier, LEVEL_1_NODES);
 
@@ -182,34 +210,97 @@ class GameController {
         const isDestinationNodeVisited = this.explorationSystem.visitedNodeIdentifiers.has(nodeIdentifier);
 
         if (isDestinationNodeRevealed || isDestinationNodeVisited) {
-            this.isPlayerInputBlocked = true;
-            this.triggerAudioHook('move');
+            const startNodeIdentifier = this.movementSystem.currentNodeConfiguration.identifier;
+            const targetNodeIdentifier = targetNodeConfiguration.identifier;
 
-            this.movementSystem.moveTo(targetNodeConfiguration, this.activeLevelNumber, levelNodesConfiguration)
-                .then((nodeConfiguration) => {
-                    this.explorationSystem.revealNode(nodeConfiguration.identifier, levelNodesConfiguration);
-                    this.cameraSystem.update(nodeConfiguration, this.activeLevelNumber, true);
+            const shortestPathIdentifiers = this.findShortestPath(startNodeIdentifier, targetNodeIdentifier, levelNodesConfiguration);
 
-                    if (nodeConfiguration.nodeType === 'dead-end') {
+            if (shortestPathIdentifiers && shortestPathIdentifiers.length > 1) {
+                this.moveRavanAlongPath(shortestPathIdentifiers, levelNodesConfiguration);
+            }
+        }
+    }
+
+    findShortestPath(startNodeIdentifier, targetNodeIdentifier, levelNodesConfiguration) {
+        const searchQueue = [[startNodeIdentifier]];
+        const visitedNodeIdentifiers = new Set([startNodeIdentifier]);
+
+        while (searchQueue.length > 0) {
+            const currentPath = searchQueue.shift();
+            const currentNodeIdentifier = currentPath[currentPath.length - 1];
+
+            if (currentNodeIdentifier === targetNodeIdentifier) {
+                return currentPath;
+            }
+
+            const nodeConnections = getNodeConnections(currentNodeIdentifier);
+
+            const adjacentNodeIdentifiers = [
+                ...nodeConnections.connectedFromNodeIdentifiers,
+                ...nodeConnections.connectedToNodeIdentifiers
+            ];
+
+            for (const neighborNodeIdentifier of adjacentNodeIdentifiers) {
+                if (!visitedNodeIdentifiers.has(neighborNodeIdentifier)) {
+                    const isVisitedNode = this.explorationSystem.visitedNodeIdentifiers.has(neighborNodeIdentifier);
+                    const isTargetNode = neighborNodeIdentifier === targetNodeIdentifier;
+
+                    if (isVisitedNode || isTargetNode) {
+                        visitedNodeIdentifiers.add(neighborNodeIdentifier);
+
+                        const neighborPath = [...currentPath, neighborNodeIdentifier];
+                        searchQueue.push(neighborPath);
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    async moveRavanAlongPath(pathIdentifiers, levelNodesConfiguration) {
+        this.isPlayerInputBlocked = true;
+        this.triggerAudioHook('move');
+
+        try {
+            for (let pathIndex = 1; pathIndex < pathIdentifiers.length; pathIndex++) {
+                const nodeIdentifier = pathIdentifiers[pathIndex];
+                const targetNodeConfiguration = levelNodesConfiguration[nodeIdentifier];
+
+                await this.movementSystem.moveTo(targetNodeConfiguration, this.activeLevelNumber, levelNodesConfiguration);
+
+                this.explorationSystem.revealNode(targetNodeConfiguration.identifier, levelNodesConfiguration);
+                this.cameraSystem.update(targetNodeConfiguration, this.activeLevelNumber, true);
+
+                const isFinalNode = pathIndex === pathIdentifiers.length - 1;
+
+                if (isFinalNode) {
+                    const nodeType = getNodeType(targetNodeConfiguration.identifier);
+
+                    if (nodeType === 'dead-end') {
                         this.triggerAudioHook('dead-end');
-                    } else if (nodeConfiguration.nodeType === 'finish') {
+                    } else if (nodeType === 'finish') {
                         this.triggerAudioHook('finish');
                     } else {
                         this.triggerAudioHook('land');
                     }
 
                     setTimeout(() => {
-                        this.checkLevelCompletion(nodeConfiguration);
+                        this.checkLevelCompletion(targetNodeConfiguration);
                     }, 1100);
-                })
-                .catch(() => {
-                    this.isPlayerInputBlocked = false;
-                });
+                } else {
+                    this.triggerAudioHook('land');
+                }
+            }
+        } catch (error) {
+            this.isPlayerInputBlocked = false;
         }
     }
 
     checkLevelCompletion(nodeConfiguration) {
-        if (nodeConfiguration.nodeType !== 'finish') {
+        const nodeType = getNodeType(nodeConfiguration.identifier);
+
+        if (nodeType !== 'finish') {
             this.isPlayerInputBlocked = false;
             return;
         }
@@ -231,7 +322,7 @@ class GameController {
 
         this.explorationSystem.initLevel(2);
 
-        const startNodeConfiguration = LEVEL_2_NODES.l2_r1_3;
+        const startNodeConfiguration = LEVEL_2_NODES.level_two_row_one_right;
 
         this.ravanCharacterElement.classList.add('hidden');
 

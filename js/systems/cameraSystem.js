@@ -1,3 +1,5 @@
+import { getNodeCoordinates } from '../data/nodes.js';
+
 export class CameraSystem {
     constructor(viewportElement, boardElement) {
         this.viewport = viewportElement;
@@ -59,13 +61,14 @@ export class CameraSystem {
 
     getNodeBoardPosition(nodeConfiguration, levelNumber, levelOneElement, levelTwoElement) {
         const boardWidthPixels = this.board.offsetWidth;
-        const horizontalOffsetPixels = (nodeConfiguration.horizontalPercentage / 100) * boardWidthPixels;
+        const nodeCoordinates = getNodeCoordinates(nodeConfiguration.identifier);
+        const horizontalOffsetPixels = (nodeCoordinates.horizontalPercentage / 100) * boardWidthPixels;
 
         let verticalOffsetPixels = 0;
         if (levelNumber === 1) {
-            verticalOffsetPixels = (nodeConfiguration.verticalPercentage / 100) * levelOneElement.offsetHeight;
+            verticalOffsetPixels = (nodeCoordinates.verticalPercentage / 100) * levelOneElement.offsetHeight;
         } else {
-            verticalOffsetPixels = levelTwoElement.offsetTop + (nodeConfiguration.verticalPercentage / 100) * levelTwoElement.offsetHeight;
+            verticalOffsetPixels = levelTwoElement.offsetTop + (nodeCoordinates.verticalPercentage / 100) * levelTwoElement.offsetHeight;
         }
 
         return { horizontalOffsetPixels, verticalOffsetPixels };
