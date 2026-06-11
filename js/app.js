@@ -127,10 +127,14 @@ class GameController {
         this.triggerAudioHook('zoom');
 
         const mapScrollElement = document.getElementById('map-scroll-item');
-        mapScrollElement.classList.remove('pulsing');
         mapScrollElement.classList.add('zoomed');
 
         const journeyScreenElement = document.getElementById('journey-map-screen');
+        const pulseContainer = journeyScreenElement.querySelector('.map-pulse-container');
+        if (pulseContainer) {
+            pulseContainer.classList.remove('pulsing');
+        }
+
         const journeyMapBackgroundOverlay = journeyScreenElement.querySelector('.journey-map-background-overlay');
         const journeyMapBackgroundUnderlay = journeyScreenElement.querySelector('.journey-map-background-underlay');
 

@@ -7,8 +7,8 @@
 }
 
 .title-logo {
-    width: 60cqw;
-    max-width: 500px;
+    width: 70cqw;
+    max-width: 800px;
     height: auto;
     object-fit: contain;
     filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.6));
@@ -16,16 +16,24 @@
 }
 
 .start-button-image img {
-    width: 20cqw;
-    max-width: 180px;
+    width: 14cqw;
+    max-width: 300px;
     height: auto;
     object-fit: contain;
 }
 
+#start-button {
+    position: relative;
+    top: -12cqh;
+}
+
 @keyframes floatTitle {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0);
     }
+
     50% {
         transform: translateY(-10px);
     }

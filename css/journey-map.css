@@ -18,6 +18,10 @@
     left: 0;
 }
 
+.map-pulse-container.pulsing {
+    animation: pulseScroll 2s ease-in-out infinite;
+}
+
 #map-scroll-item {
     width: 35cqw;
     max-width: 300px;
@@ -25,15 +29,11 @@
     object-fit: contain;
     cursor: pointer;
     filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.7));
-    transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1s ease-in-out;
-}
-
-#map-scroll-item.pulsing {
-    animation: pulseScroll 2s ease-in-out infinite;
+    transition: transform 2s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.8s ease-in-out;
 }
 
 #map-scroll-item.zoomed {
-    transform: scale(4.5) rotate(5deg);
+    transform: scale(15) rotate(12deg);
     opacity: 0;
     pointer-events: none;
 }
