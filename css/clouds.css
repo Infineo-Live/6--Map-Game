@@ -1,0 +1,29 @@
+.clouds-overlay-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 90;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.cloud-item {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    object-fit: contain;
+    pointer-events: none;
+    opacity: var(--initial-opacity, 1.0);
+    transform: translate(-50%, -50%) scale(var(--cloud-scale)) rotate(var(--cloud-rotation));
+    transition: transform 2.5s cubic-bezier(0.215, 0.61, 0.355, 1), 
+                opacity 2s ease-in-out;
+}
+
+.cloud-item.cleared {
+    opacity: 0 !important;
+    transform: translate(calc(-50% + var(--shift-x)), calc(-50% + var(--shift-y))) 
+               scale(calc(var(--cloud-scale) * 1.6)) 
+               rotate(calc(var(--cloud-rotation) + var(--shift-rotation)));
+}

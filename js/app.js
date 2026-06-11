@@ -15,7 +15,7 @@ class GameController {
 
         this.cameraSystem = new CameraSystem(this.viewportElement, this.gameBoardElement);
         this.explorationSystem = new ExplorationSystem(this.gameBoardElement);
-        this.mp4ementSystem = new MovementSystem(this.ravanCharacterElement, this.gameBoardElement);
+        this.movementSystem = new MovementSystem(this.ravanCharacterElement, this.gameBoardElement);
 
         this.initEvents();
     }
@@ -42,10 +42,10 @@ class GameController {
             if (this.currentScreenName === 'gameplay') {
                 this.explorationSystem.drawPaths();
 
-                const currentNodeConfiguration = this.mp4ementSystem.currentNodeConfiguration;
+                const currentNodeConfiguration = this.movementSystem.currentNodeConfiguration;
 
                 if (currentNodeConfiguration) {
-                    this.mp4ementSystem.alignRavanToNode(currentNodeConfiguration, this.activeLevelNumber);
+                    this.movementSystem.alignRavanToNode(currentNodeConfiguration, this.activeLevelNumber);
                     this.cameraSystem.update(currentNodeConfiguration, this.activeLevelNumber, false);
                 }
             }
@@ -65,10 +65,10 @@ class GameController {
                         this.explorationSystem.updateExplorationState(nodesConfiguration);
                         this.explorationSystem.drawPaths();
 
-                        const currentNodeConfiguration = this.mp4ementSystem.currentNodeConfiguration;
+                        const currentNodeConfiguration = this.movementSystem.currentNodeConfiguration;
 
                         if (currentNodeConfiguration) {
-                            this.mp4ementSystem.alignRavanToNode(currentNodeConfiguration, this.activeLevelNumber);
+                            this.movementSystem.alignRavanToNode(currentNodeConfiguration, this.activeLevelNumber);
                             this.cameraSystem.update(currentNodeConfiguration, this.activeLevelNumber, false);
                         }
                     }
@@ -183,12 +183,14 @@ class GameController {
         this.explorationSystem.initLevel(1);
 
         const startNodeConfiguration = LEVEL_1_NODES.level_one_row_one_center;
-        this.mp4ementSystem.setCurrentNode(startNodeConfiguration, 1);
+        this.movementSystem.setCurrentNode(startNodeConfiguration, 1);
         this.explorationSystem.revealNode(startNodeConfiguration.identifier, LEVEL_1_NODES);
+        this.explorationSystem.updateCloudsProjection();
 
         setTimeout(() => {
             this.explorationSystem.drawPaths();
             this.cameraSystem.update(startNodeConfiguration, 1, false);
+            this.explorationSystem.updateCloudsProjection();
         }, 100);
     }
 
@@ -214,13 +216,13 @@ class GameController {
         const isDestinationNodeVisited = this.explorationSystem.visitedNodeIdentifiers.has(nodeIdentifier);
 
         if (isDestinationNodeRevealed || isDestinationNodeVisited) {
-            const startNodeIdentifier = this.mp4ementSystem.currentNodeConfiguration.identifier;
+            const startNodeIdentifier = this.movementSystem.currentNodeConfiguration.identifier;
             const targetNodeIdentifier = targetNodeConfiguration.identifier;
 
             const shortestPathIdentifiers = this.findShortestPath(startNodeIdentifier, targetNodeIdentifier, levelNodesConfiguration);
 
             if (shortestPathIdentifiers && shortestPathIdentifiers.length > 1) {
-                this.mp4eRavanAlongPath(shortestPathIdentifiers, levelNodesConfiguration);
+                this.moveRavanAlongPath(shortestPathIdentifiers, levelNodesConfiguration);
             }
         }
     }
@@ -271,9 +273,21 @@ class GameController {
                 const nodeIdentifier = pathIdentifiers[pathIndex];
                 const targetNodeConfiguration = levelNodesConfiguration[nodeIdentifier];
 
-                await this.mp4ementSystem.moveTo(targetNodeConfiguration, this.activeLevelNumber, levelNodesConfiguration);
+                let isWalking = true;
+                const updateCloudsFrame = () => {
+                    this.explorationSystem.updateCloudsProjection();
+                    if (isWalking) {
+                        requestAnimationFrame(updateCloudsFrame);
+                    }
+                };
+                requestAnimationFrame(updateCloudsFrame);
+
+                await this.movementSystem.moveTo(targetNodeConfiguration, this.activeLevelNumber, levelNodesConfiguration);
+
+                isWalking = false;
 
                 this.explorationSystem.revealNode(targetNodeConfiguration.identifier, levelNodesConfiguration);
+                this.explorationSystem.updateCloudsProjection();
                 this.cameraSystem.update(targetNodeConfiguration, this.activeLevelNumber, true);
 
                 const isFinalNode = pathIndex === pathIdentifiers.length - 1;
@@ -334,8 +348,9 @@ class GameController {
 
         this.cameraSystem.transitionToLevel2(startNodeConfiguration)
             .then(() => {
-                this.mp4ementSystem.setCurrentNode(startNodeConfiguration, 2);
+                this.movementSystem.setCurrentNode(startNodeConfiguration, 2);
                 this.explorationSystem.revealNode(startNodeConfiguration.identifier, LEVEL_2_NODES);
+                this.explorationSystem.updateCloudsProjection();
                 this.isPlayerInputBlocked = false;
             });
     }

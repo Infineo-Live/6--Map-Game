@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +17,9 @@
     <link rel="stylesheet" href="css/path.css">
     <link rel="stylesheet" href="css/ravan.css">
     <link rel="stylesheet" href="css/result-screen.css">
+    <link rel="stylesheet" href="css/clouds.css">
 </head>
+
 <body>
     <div class="game-viewport">
         <div id="instruction-banner">
@@ -50,18 +53,22 @@
             <div class="camera-viewport">
                 <div class="game-board">
                     <svg class="path-overlay" xmlns="http://www.w3.org/2000/svg"></svg>
+                    <div class="clouds-overlay-container"></div>
 
                     <div id="level-1" class="level-container">
-                        <img src="assets/images/backgrounds/game-bg-1.webp" alt="Level 1 Background" class="level-background">
+                        <img src="assets/images/backgrounds/game-bg-1.webp" alt="Level 1 Background"
+                            class="level-background">
                         <div class="nodes-container" id="level-1-nodes"></div>
                     </div>
 
                     <div id="cloud-barrier-container" class="level-container">
-                        <img src="assets/images/clouds/cloud-barrier.webp" alt="Cloud Barrier Divider" class="level-background cloud-barrier-image">
+                        <img src="assets/images/clouds/cloud-barrier.webp" alt="Cloud Barrier Divider"
+                            class="level-background cloud-barrier-image">
                     </div>
 
                     <div id="level-2" class="level-container">
-                        <img src="assets/images/backgrounds/game-bg-2.webp" alt="Level 2 Background" class="level-background">
+                        <img src="assets/images/backgrounds/game-bg-2.webp" alt="Level 2 Background"
+                            class="level-background">
                         <div class="nodes-container" id="level-2-nodes"></div>
                     </div>
 
@@ -82,4 +89,5 @@
 
     <script type="module" src="js/app.js"></script>
 </body>
+
 </html>
