@@ -1,8 +1,8 @@
-.journey-map-bg-under {
+.journey-map-background-underlay {
     background-image: url('../assets/images/backgrounds/start-bg.png');
 }
 
-.journey-map-bg {
+.journey-map-background-overlay {
     background-image: url('../assets/images/backgrounds/map-bg.png');
 }
 
@@ -28,7 +28,6 @@
     transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1s ease-in-out;
 }
 
-/* Pulsing effect */
 #map-scroll-item.pulsing {
     animation: pulseScroll 2s ease-in-out infinite;
 }
@@ -39,7 +38,7 @@
     pointer-events: none;
 }
 
-.continue-btn-img {
+.continue-button-image {
     position: absolute;
     bottom: 8cqh;
     z-index: 10;
@@ -48,12 +47,12 @@
     transition: opacity 0.5s ease-in-out, transform 0.2s ease;
 }
 
-.continue-btn-img.visible {
+.continue-button-image.visible {
     opacity: 1;
     pointer-events: auto;
 }
 
-.continue-btn-img img {
+.continue-button-image img {
     width: 25cqw;
     max-width: 220px;
     height: auto;

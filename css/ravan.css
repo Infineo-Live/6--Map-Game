@@ -4,7 +4,6 @@
     height: 110px;
     pointer-events: none;
     z-index: 30;
-    /* Translate anchors Ravan's feet to the center of the node */
     transform: translate(-50%, -75%);
     transition: left 1s cubic-bezier(0.25, 1, 0.5, 1),
                 top 1s cubic-bezier(0.25, 1, 0.5, 1);
@@ -18,7 +17,6 @@
     animation: ravanIdle 3s ease-in-out infinite alternate;
 }
 
-/* Float idle animation for Ravan */
 @keyframes ravanIdle {
     0% {
         transform: translateY(0) scale(1);
@@ -28,7 +26,6 @@
     }
 }
 
-/* Walk animation class added during movement */
 .ravan-sprite.walking img {
     animation: ravanWalk 0.25s infinite alternate ease-in-out;
 }

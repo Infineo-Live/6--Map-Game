@@ -1,154 +1,123 @@
-// Camera System - Handles centering Ravan in the landscape viewport and level transitions
-
 export class CameraSystem {
     constructor(viewportElement, boardElement) {
         this.viewport = viewportElement;
         this.board = boardElement;
-        this.currentX = 0;
-        this.currentY = 0;
-        this.zoomScale = 1.0; // Reset camera zoom to full width to prevent black borders
+        this.currentHorizontalOffset = 0;
+        this.currentVerticalOffset = 0;
+        this.zoomScaleFactor = 1.0;
     }
 
-    /**
-     * Update camera translation to frame Ravan on his current node.
-     * @param {Object} node - The current node Ravan occupies.
-     * @param {number} level - Current active level (1 or 2).
-     * @param {boolean} smooth - Whether to animate the camera movement.
-     */
-    update(node, level, smooth = true) {
-        const viewportWidth = this.viewport.clientWidth;
-        const viewportHeight = this.viewport.clientHeight;
+    update(nodeConfiguration, levelNumber, isSmoothTransition = true) {
+        const viewportWidthPixels = this.viewport.clientWidth;
+        const viewportHeightPixels = this.viewport.clientHeight;
 
-        const level1 = document.getElementById('level-1');
-        const level2 = document.getElementById('level-2');
-        const ravan = document.getElementById('ravan-character');
+        const levelOneElement = document.getElementById('level-1');
+        const levelTwoElement = document.getElementById('level-2');
+        const ravanCharacterElement = document.getElementById('ravan-character');
 
-        if (!level1 || !level2 || !ravan) return;
-
-        const scale = this.zoomScale;
-
-        // Get absolute pixel coordinates of the node relative to the game board
-        const nodePos = this.getNodeBoardPosition(node, level, level1, level2);
-
-        // Target coordinates to center Ravan in the viewport (taking scale into account)
-        let targetX = viewportWidth / 2 - nodePos.x * scale;
-        let targetY = viewportHeight / 2 - nodePos.y * scale;
-
-        // Determine boundaries based on active level to prevent scrolling past borders
-        const level1Height = level1.offsetHeight;
-        const level2Height = level2.offsetHeight;
-        const level2Top = level2.offsetTop;
-        const totalBoardHeight = this.board.offsetHeight;
-
-        const boardWidth = this.board.offsetWidth;
-        // Disable horizontal panning if board fits within screen width
-        if (boardWidth * scale <= viewportWidth) {
-            targetX = (viewportWidth - boardWidth * scale) / 2; // Center horizontally
-        } else {
-            // Clamp X within board limits
-            targetX = Math.max(viewportWidth - boardWidth * scale, Math.min(0, targetX));
+        if (!levelOneElement || !levelTwoElement || !ravanCharacterElement) {
+            return;
         }
 
-        // Clamp Y based on active level bounds
-        if (level === 1) {
-            if (level1Height * scale <= viewportHeight) {
-                targetY = (viewportHeight - level1Height * scale) / 2;
+        const scaleFactor = this.zoomScaleFactor;
+        const nodeBoardPosition = this.getNodeBoardPosition(nodeConfiguration, levelNumber, levelOneElement, levelTwoElement);
+
+        let targetHorizontalOffsetPixels = viewportWidthPixels / 2 - nodeBoardPosition.horizontalOffsetPixels * scaleFactor;
+        let targetVerticalOffsetPixels = viewportHeightPixels / 2 - nodeBoardPosition.verticalOffsetPixels * scaleFactor;
+
+        const levelOneHeightPixels = levelOneElement.offsetHeight;
+        const levelTwoHeightPixels = levelTwoElement.offsetHeight;
+        const levelTwoTopOffsetPixels = levelTwoElement.offsetTop;
+        const totalBoardHeightPixels = this.board.offsetHeight;
+        const boardWidthPixels = this.board.offsetWidth;
+
+        if (boardWidthPixels * scaleFactor <= viewportWidthPixels) {
+            targetHorizontalOffsetPixels = (viewportWidthPixels - boardWidthPixels * scaleFactor) / 2;
+        } else {
+            targetHorizontalOffsetPixels = Math.max(viewportWidthPixels - boardWidthPixels * scaleFactor, Math.min(0, targetHorizontalOffsetPixels));
+        }
+
+        if (levelNumber === 1) {
+            if (levelOneHeightPixels * scaleFactor <= viewportHeightPixels) {
+                targetVerticalOffsetPixels = (viewportHeightPixels - levelOneHeightPixels * scaleFactor) / 2;
             } else {
-                const minY = -(level1Height * scale - viewportHeight);
-                targetY = Math.max(minY, Math.min(0, targetY));
+                const minimumVerticalOffsetPixels = -(levelOneHeightPixels * scaleFactor - viewportHeightPixels);
+                targetVerticalOffsetPixels = Math.max(minimumVerticalOffsetPixels, Math.min(0, targetVerticalOffsetPixels));
             }
-        } else if (level === 2) {
-            if (level2Height * scale <= viewportHeight) {
-                targetY = -level2Top * scale + (viewportHeight - level2Height * scale) / 2;
+        } else if (levelNumber === 2) {
+            if (levelTwoHeightPixels * scaleFactor <= viewportHeightPixels) {
+                targetVerticalOffsetPixels = -levelTwoTopOffsetPixels * scaleFactor + (viewportHeightPixels - levelTwoHeightPixels * scaleFactor) / 2;
             } else {
-                const minY = -(totalBoardHeight * scale - viewportHeight);
-                const maxY = -level2Top * scale;
-                targetY = Math.max(minY, Math.min(maxY, targetY));
+                const minimumVerticalOffsetPixels = -(totalBoardHeightPixels * scaleFactor - viewportHeightPixels);
+                const maximumVerticalOffsetPixels = -levelTwoTopOffsetPixels * scaleFactor;
+                targetVerticalOffsetPixels = Math.max(minimumVerticalOffsetPixels, Math.min(maximumVerticalOffsetPixels, targetVerticalOffsetPixels));
             }
         }
 
-        this.applyTransform(targetX, targetY, smooth);
+        this.applyTransform(targetHorizontalOffsetPixels, targetVerticalOffsetPixels, isSmoothTransition);
     }
 
-    /**
-     * Get Ravan's absolute coordinates relative to the entire stacked board
-     */
-    getNodeBoardPosition(node, level, level1, level2) {
-        const boardWidth = this.board.offsetWidth;
-        const x = (node.x / 100) * boardWidth;
+    getNodeBoardPosition(nodeConfiguration, levelNumber, levelOneElement, levelTwoElement) {
+        const boardWidthPixels = this.board.offsetWidth;
+        const horizontalOffsetPixels = (nodeConfiguration.horizontalPercentage / 100) * boardWidthPixels;
 
-        let y = 0;
-        if (level === 1) {
-            y = (node.y / 100) * level1.offsetHeight;
+        let verticalOffsetPixels = 0;
+        if (levelNumber === 1) {
+            verticalOffsetPixels = (nodeConfiguration.verticalPercentage / 100) * levelOneElement.offsetHeight;
         } else {
-            y = level2.offsetTop + (node.y / 100) * level2.offsetHeight;
+            verticalOffsetPixels = levelTwoElement.offsetTop + (nodeConfiguration.verticalPercentage / 100) * levelTwoElement.offsetHeight;
         }
 
-        return { x, y };
+        return { horizontalOffsetPixels, verticalOffsetPixels };
     }
 
-    /**
-     * Pan camera directly to a board position (used during transitional animations)
-     */
-    panTo(x, y, smooth = true) {
-        this.applyTransform(x, y, smooth);
+    panTo(horizontalOffsetPixels, verticalOffsetPixels, isSmoothTransition = true) {
+        this.applyTransform(horizontalOffsetPixels, verticalOffsetPixels, isSmoothTransition);
     }
 
-    applyTransform(x, y, smooth) {
-        this.currentX = x;
-        this.currentY = y;
-        this.board.style.transition = smooth ? 'transform 1.5s cubic-bezier(0.25, 1, 0.5, 1)' : 'none';
-        this.board.style.transform = `translate3d(${x}px, ${y}px, 0px) scale(${this.zoomScale})`;
+    applyTransform(horizontalOffsetPixels, verticalOffsetPixels, isSmoothTransition) {
+        this.currentHorizontalOffset = horizontalOffsetPixels;
+        this.currentVerticalOffset = verticalOffsetPixels;
+        this.board.style.transition = isSmoothTransition ? 'transform 1.5s cubic-bezier(0.25, 1, 0.5, 1)' : 'none';
+        this.board.style.transform = `translate3d(${horizontalOffsetPixels}px, ${verticalOffsetPixels}px, 0px) scale(${this.zoomScaleFactor})`;
     }
 
-    /**
-     * Run the multi-stage vertical and horizontal level transition
-     * @param {Object} startNode - Level 2 starting node object.
-     * @returns {Promise} Resolves when the transition finishes.
-     */
-    transitionToLevel2(startNode) {
+    transitionToLevel2(startNodeConfiguration) {
         return new Promise((resolve) => {
-            const level1 = document.getElementById('level-1');
-            const level2 = document.getElementById('level-2');
-            const viewportWidth = this.viewport.clientWidth;
-            const viewportHeight = this.viewport.clientHeight;
+            const levelOneElement = document.getElementById('level-1');
+            const levelTwoElement = document.getElementById('level-2');
+            const viewportWidthPixels = this.viewport.clientWidth;
+            const viewportHeightPixels = this.viewport.clientHeight;
 
-            if (!level1 || !level2) {
+            if (!levelOneElement || !levelTwoElement) {
                 resolve();
                 return;
             }
 
-            const scale = this.zoomScale;
-            const boardWidth = this.board.offsetWidth;
+            const scaleFactor = this.zoomScaleFactor;
+            const boardWidthPixels = this.board.offsetWidth;
 
-            // 1. First scroll camera downwards to top of Level 2
-            const targetY = -level2.offsetTop * scale;
-            let targetX = (viewportWidth - boardWidth * scale) / 2; // Center horizontally
+            const targetVerticalOffsetPixels = -levelTwoElement.offsetTop * scaleFactor;
+            let targetHorizontalOffsetPixels = (viewportWidthPixels - boardWidthPixels * scaleFactor) / 2;
 
-            // Disable player actions while panning
-            this.panTo(targetX, targetY, true);
+            this.panTo(targetHorizontalOffsetPixels, targetVerticalOffsetPixels, true);
 
-            // Wait for vertical pan to complete (1.5s transition)
             setTimeout(() => {
-                // 2. Spawn Ravan at Level 2 Start
-                const ravan = document.getElementById('ravan-character');
-                const nodePos = this.getNodeBoardPosition(startNode, 2, level1, level2);
-                ravan.style.left = `${nodePos.x}px`;
-                ravan.style.top = `${nodePos.y}px`;
-                ravan.classList.remove('hidden');
+                const ravanCharacterElement = document.getElementById('ravan-character');
+                const nodeBoardPosition = this.getNodeBoardPosition(startNodeConfiguration, 2, levelOneElement, levelTwoElement);
+                ravanCharacterElement.style.left = `${nodeBoardPosition.horizontalOffsetPixels}px`;
+                ravanCharacterElement.style.top = `${nodeBoardPosition.verticalOffsetPixels}px`;
+                ravanCharacterElement.classList.remove('hidden');
 
-                // 3. Pan horizontally a little to the right to frame Ravan's start position (at 75% X)
-                let finalX = viewportWidth / 2 - nodePos.x * scale;
-                if (boardWidth * scale > viewportWidth) {
-                    finalX = Math.max(viewportWidth - boardWidth * scale, Math.min(0, finalX));
+                let finalHorizontalOffsetPixels = viewportWidthPixels / 2 - nodeBoardPosition.horizontalOffsetPixels * scaleFactor;
+                if (boardWidthPixels * scaleFactor > viewportWidthPixels) {
+                    finalHorizontalOffsetPixels = Math.max(viewportWidthPixels - boardWidthPixels * scaleFactor, Math.min(0, finalHorizontalOffsetPixels));
                 } else {
-                    finalX = (viewportWidth - boardWidth * scale) / 2;
+                    finalHorizontalOffsetPixels = (viewportWidthPixels - boardWidthPixels * scaleFactor) / 2;
                 }
 
-                // Smoothly adjust camera framing
                 setTimeout(() => {
-                    this.panTo(finalX, targetY, true);
-                    // Wait for horizontal adjustments
+                    this.panTo(finalHorizontalOffsetPixels, targetVerticalOffsetPixels, true);
                     setTimeout(resolve, 1500);
                 }, 400);
 

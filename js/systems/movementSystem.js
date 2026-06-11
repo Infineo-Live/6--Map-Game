@@ -1,100 +1,89 @@
-// Movement System - Coordinates validation, animations, and path traversal for Ravan
-
 export class MovementSystem {
-    constructor(ravanElement, gameBoard) {
-        this.ravan = ravanElement;
-        this.board = gameBoard;
-        this.currentNode = null;
-        this.isMoving = false;
+    constructor(ravanCharacterElement, gameBoardElement) {
+        this.ravan = ravanCharacterElement;
+        this.board = gameBoardElement;
+        this.currentNodeConfiguration = null;
+        this.isRavanMoving = false;
     }
 
-    /**
-     * Set Ravan's current node immediately without animation
-     */
-    setCurrentNode(node, level) {
-        this.currentNode = node;
-        this.isMoving = false;
-        this.alignRavanToNode(node, level);
+    setCurrentNode(nodeConfiguration, levelNumber) {
+        this.currentNodeConfiguration = nodeConfiguration;
+        this.isRavanMoving = false;
+
+        this.alignRavanToNode(nodeConfiguration, levelNumber);
     }
 
-    /**
-     * Position Ravan sprite directly over a node
-     */
-    alignRavanToNode(node, level) {
-        const level1 = document.getElementById('level-1');
-        const level2 = document.getElementById('level-2');
-        if (!level1 || !level2) return;
+    alignRavanToNode(nodeConfiguration, levelNumber) {
+        const levelOneElement = document.getElementById('level-1');
+        const levelTwoElement = document.getElementById('level-2');
 
-        const boardWidth = this.board.offsetWidth;
-        const x = (node.x / 100) * boardWidth;
-
-        let y = 0;
-        if (level === 1) {
-            y = (node.y / 100) * level1.offsetHeight;
-        } else {
-            y = level2.offsetTop + (node.y / 100) * level2.offsetHeight;
+        if (!levelOneElement || !levelTwoElement) {
+            return;
         }
 
-        // Apply style positioning
-        this.ravan.style.left = `${x}px`;
-        this.ravan.style.top = `${y}px`;
+        const boardWidthPixels = this.board.offsetWidth;
+        const horizontalCoordinatePixels = (nodeConfiguration.horizontalPercentage / 100) * boardWidthPixels;
+
+        let verticalCoordinatePixels = 0;
+        if (levelNumber === 1) {
+            verticalCoordinatePixels = (nodeConfiguration.verticalPercentage / 100) * levelOneElement.offsetHeight;
+        } else {
+            verticalCoordinatePixels = levelTwoElement.offsetTop + (nodeConfiguration.verticalPercentage / 100) * levelTwoElement.offsetHeight;
+        }
+
+        this.ravan.style.left = `${horizontalCoordinatePixels}px`;
+        this.ravan.style.top = `${verticalCoordinatePixels}px`;
     }
 
-    /**
-     * Move Ravan to a target node with path verification and walk animation
-     */
-    moveTo(targetNode, level, levelNodes) {
+    moveTo(targetNodeConfiguration, levelNumber, levelNodesConfiguration) {
         return new Promise((resolve, reject) => {
-            if (this.isMoving) {
+            if (this.isRavanMoving) {
                 reject('Ravan is already moving');
                 return;
             }
 
-            // Verify adjacency
-            if (!this.currentNode.connections.includes(targetNode.id)) {
+            if (!this.currentNodeConfiguration.connectedNodeIdentifiers.includes(targetNodeConfiguration.identifier)) {
                 reject('Target node is not adjacent');
                 return;
             }
 
-            this.isMoving = true;
+            this.isRavanMoving = true;
             this.ravan.classList.add('walking');
 
-            // Align Ravan to new coordinates (triggers CSS transition)
-            this.alignRavanToNode(targetNode, level);
+            this.alignRavanToNode(targetNodeConfiguration, levelNumber);
 
-            // Wait for movement transition to finish (1000ms duration matching CSS)
             setTimeout(() => {
                 this.ravan.classList.remove('walking');
-                this.currentNode = targetNode;
-                this.isMoving = false;
-                
-                // Show Dead End instruction banner if reached
-                this.updateInstructionBanner(targetNode);
+                this.currentNodeConfiguration = targetNodeConfiguration;
+                this.isRavanMoving = false;
 
-                resolve(targetNode);
+                this.updateInstructionBanner(targetNodeConfiguration);
+
+                resolve(targetNodeConfiguration);
             }, 1050);
         });
     }
 
-    /**
-     * Manage the instruction banner display for dead ends and finish nodes
-     */
-    updateInstructionBanner(node) {
-        const banner = document.getElementById('instruction-banner');
-        const bannerText = banner ? banner.querySelector('.banner-text') : null;
+    updateInstructionBanner(nodeConfiguration) {
+        const instructionBannerElement = document.getElementById('instruction-banner');
+        const instructionBannerTextElement = instructionBannerElement ? instructionBannerElement.querySelector('.banner-text') : null;
 
-        if (!banner || !bannerText) return;
+        if (!instructionBannerElement || !instructionBannerTextElement) {
+            return;
+        }
 
-        if (node.type === 'dead-end') {
-            bannerText.textContent = `${node.label}. Backtrack to another path.`;
-            banner.classList.add('visible');
-        } else if (node.type === 'finish') {
-            bannerText.textContent = 'Destination Reached!';
-            banner.classList.add('visible');
-            setTimeout(() => banner.classList.remove('visible'), 3000);
+        if (nodeConfiguration.nodeType === 'dead-end') {
+            instructionBannerTextElement.textContent = `${nodeConfiguration.nodeLabel}. Backtrack to another path.`;
+            instructionBannerElement.classList.add('visible');
+        } else if (nodeConfiguration.nodeType === 'finish') {
+            instructionBannerTextElement.textContent = 'Destination Reached!';
+            instructionBannerElement.classList.add('visible');
+
+            setTimeout(() => {
+                instructionBannerElement.classList.remove('visible');
+            }, 3000);
         } else {
-            // Hide for normal nodes
-            banner.classList.remove('visible');
+            instructionBannerElement.classList.remove('visible');
         }
     }
 }

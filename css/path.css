@@ -1,10 +1,8 @@
-/* SVG connection lines */
 .map-path {
     fill: none;
     stroke: var(--color-accent);
     stroke-linecap: round;
     stroke-linejoin: round;
-    /* Smooth transition for when Ravan moves and the path solidifies */
     transition: stroke-dasharray 1s ease-in-out,
                 stroke 0.8s ease-in-out,
                 stroke-width 0.5s ease-in-out,
@@ -12,7 +10,6 @@
                 filter 0.5s ease-in-out;
 }
 
-/* Faint path preview: shows a subtle trace of a path before nodes are fully visited */
 .map-path.faint-preview {
     stroke-width: 3;
     stroke: #5a4c3c;
@@ -20,7 +17,6 @@
     opacity: 0.22;
 }
 
-/* Fully revealed path (active connection, but not yet traversed) */
 .map-path.dotted-active {
     stroke-width: 4;
     stroke: var(--color-accent);
@@ -30,16 +26,14 @@
     animation: dashScroll 30s linear infinite;
 }
 
-/* Traversed path (turned to a glowing solid golden path) */
 .map-path.solid-traversed {
     stroke-width: 5.5;
     stroke: var(--color-gold);
-    stroke-dasharray: 0; /* Clear dashes */
+    stroke-dasharray: 0;
     opacity: 1;
     filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.8));
 }
 
-/* Dynamic moving dots effect for interactive path options */
 @keyframes dashScroll {
     to {
         stroke-dashoffset: -1000;

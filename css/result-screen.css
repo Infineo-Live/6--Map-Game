@@ -1,8 +1,8 @@
-.result-bg {
+.result-background {
     background-image: url('../assets/images/backgrounds/result-bg.png');
 }
 
-.result-text-img {
+.result-text-image {
     width: 60cqw;
     max-width: 500px;
     height: auto;

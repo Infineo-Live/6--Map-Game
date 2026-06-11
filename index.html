@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Infinio: Journey to Lanka</title>
-    <!-- Google Fonts: Outfit for sleek typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <!-- CSS Component stylesheets -->
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/start-screen.css">
     <link rel="stylesheet" href="css/journey-map.css">
@@ -20,63 +18,52 @@
 </head>
 <body>
     <div class="game-viewport">
-        <!-- Top Instruction Banner for Dead Ends and Navigation Hints -->
         <div id="instruction-banner" class="hidden">
             <span class="banner-text">Explore the path forward...</span>
         </div>
 
-        <!-- Screen 1: Start Screen -->
         <div id="start-screen" class="screen active">
-            <div class="screen-bg start-bg active"></div>
+            <div class="screen-background start-background active"></div>
             <div class="screen-content">
                 <img src="assets/images/ui/title.png" alt="Infinio Title Logo" class="title-logo">
-                <button id="start-button" class="btn start-btn-img">
+                <button id="start-button" class="game-button start-button-image">
                     <img src="assets/images/ui/start-btn.png" alt="Start Game">
                 </button>
             </div>
         </div>
 
-        <!-- Screen 2: Journey Map Screen (Zoom Transition) -->
         <div id="journey-map-screen" class="screen hidden">
-            <!-- Starting background is same start-bg, transitions to map-bg -->
-            <div class="screen-bg journey-map-bg-under"></div>
-            <div class="screen-bg journey-map-bg"></div>
+            <div class="screen-background journey-map-background-underlay"></div>
+            <div class="screen-background journey-map-background-overlay"></div>
             <div class="screen-content">
-                <!-- Pulsing overlay scroll map -->
                 <div class="map-pulse-container">
                     <img id="map-scroll-item" src="assets/images/map/map.png" alt="Ancient Scroll Map" class="pulsing">
                 </div>
-                <button id="continue-button" class="btn continue-btn-img hidden">
+                <button id="continue-button" class="game-button continue-button-image hidden">
                     <img src="assets/images/ui/continue-btn.png" alt="Continue Journey">
                 </button>
             </div>
         </div>
 
-        <!-- Screen 3: Gameplay Screen (Vertical Stacking and Scrolling) -->
         <div id="gameplay-screen" class="screen hidden">
             <div class="camera-viewport">
                 <div class="game-board">
-                    <!-- SVG Path layer overlaying nodes, under Ravan -->
                     <svg class="path-overlay" xmlns="http://www.w3.org/2000/svg"></svg>
 
-                    <!-- Level 1 Area -->
                     <div id="level-1" class="level-container">
-                        <img src="assets/images/backgrounds/game-bg-1.png" alt="Level 1 Background" class="level-bg">
+                        <img src="assets/images/backgrounds/game-bg-1.png" alt="Level 1 Background" class="level-background">
                         <div class="nodes-container" id="level-1-nodes"></div>
                     </div>
 
-                    <!-- Cloud Barrier Divider -->
                     <div id="cloud-barrier-container" class="level-container">
-                        <img src="assets/images/clouds/cloud-barrier.png" alt="Cloud Barrier Divider" class="level-bg cloud-barrier-img">
+                        <img src="assets/images/clouds/cloud-barrier.png" alt="Cloud Barrier Divider" class="level-background cloud-barrier-image">
                     </div>
 
-                    <!-- Level 2 Area -->
                     <div id="level-2" class="level-container">
-                        <img src="assets/images/backgrounds/game-bg-2.png" alt="Level 2 Background" class="level-bg">
+                        <img src="assets/images/backgrounds/game-bg-2.png" alt="Level 2 Background" class="level-background">
                         <div class="nodes-container" id="level-2-nodes"></div>
                     </div>
 
-                    <!-- Ravan Character Sprite -->
                     <div id="ravan-character" class="ravan-sprite">
                         <img src="assets/images/characters/ravan-1.png" alt="Ravan Avatar">
                     </div>
@@ -84,16 +71,14 @@
             </div>
         </div>
 
-        <!-- Screen 4: Result Screen -->
         <div id="result-screen" class="screen hidden">
-            <div class="screen-bg result-bg"></div>
+            <div class="screen-background result-background"></div>
             <div class="screen-content">
-                <img src="assets/images/ui/result-text.png" alt="To Be Continued" class="result-text-img">
+                <img src="assets/images/ui/result-text.png" alt="To Be Continued" class="result-text-image">
             </div>
         </div>
     </div>
 
-    <!-- Application Script entry point and modular structure -->
     <script type="module" src="js/app.js"></script>
 </body>
 </html>
