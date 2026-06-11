@@ -38,15 +38,15 @@ export class ExplorationSystem {
             cloudsDeckElement.className = 'cloud-deck';
 
             const cloudLayerOneElement = document.createElement('img');
-            cloudLayerOneElement.src = 'assets/images/clouds/cloud-1.png';
+            cloudLayerOneElement.src = 'assets/images/clouds/cloud-1.webp';
             cloudLayerOneElement.className = 'cloud-layer cloud-layer-one';
 
             const cloudLayerTwoElement = document.createElement('img');
-            cloudLayerTwoElement.src = 'assets/images/clouds/cloud-2.png';
+            cloudLayerTwoElement.src = 'assets/images/clouds/cloud-2.webp';
             cloudLayerTwoElement.className = 'cloud-layer cloud-layer-two';
 
             const cloudLayerThreeElement = document.createElement('img');
-            cloudLayerThreeElement.src = 'assets/images/clouds/cloud-1.png';
+            cloudLayerThreeElement.src = 'assets/images/clouds/cloud-1.webp';
             cloudLayerThreeElement.className = 'cloud-layer cloud-layer-three';
 
             cloudsDeckElement.appendChild(cloudLayerOneElement);

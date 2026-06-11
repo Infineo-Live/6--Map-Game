@@ -1,9 +1,9 @@
 .journey-map-background-underlay {
-    background-image: url('../assets/images/backgrounds/start-bg.png');
+    background-image: url('../assets/images/backgrounds/start-bg.webp');
 }
 
 .journey-map-background-overlay {
-    background-image: url('../assets/images/backgrounds/map-bg.png');
+    background-image: url('../assets/images/backgrounds/map-bg.webp');
 }
 
 .map-pulse-container {
