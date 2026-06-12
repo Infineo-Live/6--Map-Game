@@ -164,11 +164,11 @@ export class ExplorationSystem {
             verticalCoordinatePixels: ravanY
         });
 
-        this.visitedNodeIdentifiers.forEach(nodeId => {
-            const nodeConfig = this.getNodeData(nodeId);
+        this.visitedNodeIdentifiers.forEach(nodeIdentifier => {
+            const nodeConfig = this.getNodeData(nodeIdentifier);
 
             if (nodeConfig) {
-                const level = nodeId.startsWith('level_two') ? 2 : 1;
+                const level = nodeIdentifier.startsWith('level_two') ? 2 : 1;
                 const position = this.getNodePixelPosition(nodeConfig, level, containerWidth, levelOneHeight, levelTwoHeight, levelTwoTop);
 
                 revealSources.push(position);
@@ -176,11 +176,12 @@ export class ExplorationSystem {
         });
 
         const adjacentNodePositions = [];
-        this.revealedNodeIdentifiers.forEach(nodeId => {
-            if (!this.visitedNodeIdentifiers.has(nodeId)) {
-                const nodeConfig = this.getNodeData(nodeId);
+
+        this.revealedNodeIdentifiers.forEach(nodeIdentifier => {
+            if (!this.visitedNodeIdentifiers.has(nodeIdentifier)) {
+                const nodeConfig = this.getNodeData(nodeIdentifier);
                 if (nodeConfig) {
-                    const level = nodeId.startsWith('level_two') ? 2 : 1;
+                    const level = nodeIdentifier.startsWith('level_two') ? 2 : 1;
                     const position = this.getNodePixelPosition(nodeConfig, level, containerWidth, levelOneHeight, levelTwoHeight, levelTwoTop);
                     adjacentNodePositions.push(position);
                 }
@@ -189,6 +190,42 @@ export class ExplorationSystem {
 
         const clearingRadius = 220;
         const cloudSize = 400;
+
+        const adjacentCloudsToKeep = new Set();
+        const adjacentCloudsToClear = new Set();
+
+        adjacentNodePositions.forEach(position => {
+            const candidates = [];
+
+            this.spawnedCloudsList.forEach(cloud => {
+                const cloudX = (cloud.horizontalPercentage / 100) * containerWidth;
+                const cloudY = (cloud.verticalPercentage / 100) * containerHeight;
+
+                const differenceX = cloudX - position.horizontalCoordinatePixels;
+                const differenceY = cloudY - position.verticalCoordinatePixels;
+                const distance = Math.sqrt(differenceX * differenceX + differenceY * differenceY);
+
+                if (distance < 180) {
+                    candidates.push({ cloud, distance });
+                }
+            });
+
+            candidates.sort((first, second) => first.distance - second.distance);
+
+            const countToKeep = Math.min(3, candidates.length);
+
+            for (let index = 0; index < countToKeep; index++) {
+                adjacentCloudsToKeep.add(candidates[index].cloud);
+            }
+
+            for (let index = countToKeep; index < candidates.length; index++) {
+                adjacentCloudsToClear.add(candidates[index].cloud);
+            }
+        });
+
+        adjacentCloudsToKeep.forEach(cloud => {
+            adjacentCloudsToClear.delete(cloud);
+        });
 
         this.spawnedCloudsList.forEach(cloud => {
             const cloudX = (cloud.horizontalPercentage / 100) * containerWidth;
@@ -206,40 +243,28 @@ export class ExplorationSystem {
 
             cloud.element.style.visibility = 'visible';
 
-            let minDistance = Infinity;
+            let minDistanceToRevealSource = Infinity;
 
             revealSources.forEach(source => {
-                const dx = cloudX - source.horizontalCoordinatePixels;
-                const dy = cloudY - source.verticalCoordinatePixels;
-                const distance = Math.sqrt(dx * dx + dy * dy);
+                const differenceX = cloudX - source.horizontalCoordinatePixels;
+                const differenceY = cloudY - source.verticalCoordinatePixels;
+                const distance = Math.sqrt(differenceX * differenceX + differenceY * differenceY);
 
-                if (distance < minDistance) {
-                    minDistance = distance;
+                if (distance < minDistanceToRevealSource) {
+                    minDistanceToRevealSource = distance;
                 }
             });
 
-            let minDistanceToAdjacentNode = Infinity;
-            adjacentNodePositions.forEach(source => {
-                const dx = cloudX - source.horizontalCoordinatePixels;
-                const dy = cloudY - source.verticalCoordinatePixels;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance < minDistanceToAdjacentNode) {
-                    minDistanceToAdjacentNode = distance;
-                }
-            });
-
-            if (minDistanceToAdjacentNode < 180) {
-                const targetOpacity = Math.min(cloud.baseOpacity, 0.30);
-                cloud.element.style.setProperty('--initial-opacity', targetOpacity);
+            if (minDistanceToRevealSource < clearingRadius) {
+                cloud.element.classList.add('cleared');
+            } else if (adjacentCloudsToKeep.has(cloud)) {
+                cloud.element.style.setProperty('--initial-opacity', 0.05);
+                cloud.element.classList.remove('cleared');
+            } else if (adjacentCloudsToClear.has(cloud)) {
+                cloud.element.classList.add('cleared');
             } else {
                 cloud.element.style.setProperty('--initial-opacity', cloud.baseOpacity);
-            }
-
-            if (minDistance < clearingRadius) {
-                if (!cloud.element.classList.contains('cleared')) {
-                    cloud.element.classList.add('cleared');
-                }
+                cloud.element.classList.remove('cleared');
             }
         });
     }
